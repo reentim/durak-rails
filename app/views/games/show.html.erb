@@ -1,0 +1,22 @@
+<% unless @game.started? %>
+  <%# TODO: full url %>
+  <%= url_for(@game) %>
+<% end %>
+
+<pre>
+  <%= @game.state.to_yaml %>
+</pre>
+
+<% if @player.name.nil? && !@game.started? %>
+  <%= form_with model: @player, local: true do |f| %>
+    <%= f.text_field :name, placeholder: 'Player name' %>
+    <%= f.submit %>
+  <% end %>
+<% end %>
+
+<% if @game.created_by?(@player) && !@game.started? %>
+  <%= form_with url: game_commencements_path, local: true do |f| %>
+    <%= f.hidden_field :game_id, value: @game.id %>
+    <%= f.submit 'Start game' %>
+  <% end %>
+<% end %>

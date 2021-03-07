@@ -1,0 +1,7 @@
+<h1>Дурак</h1>
+
+<h2>New Game</h2>
+<%= form_with model: @game, local: true do |f| %>
+  <%= f.text_field :player_name, placeholder: 'Player name' %>
+  <%= f.submit "Start" %>
+<% end %>
