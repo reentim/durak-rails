@@ -20,3 +20,5 @@
     <%= f.submit 'Start game' %>
   <% end %>
 <% end %>
+
+<%= react_component("Game", { state: @game.state }) %>
