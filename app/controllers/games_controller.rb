@@ -5,17 +5,24 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-
-    cookies[:_durak_player_secret] ||= SecureRandom.hex
-    @player = Player.find_or_create_by(secret: cookies[:_durak_player_secret])
-
-    @game.add_player(@player) unless @game.started?
+    @player = Player.find_by(secret: cookies[:_durak_player_secret])
   end
 
   def create
-    @game = Game.create!
-    @game.initialize_state
+    game = Game.create!
+    game.initialize_state
 
-    redirect_to @game
+    cookies[:_durak_player_secret] ||= SecureRandom.hex
+    player = Player.find_or_create_by(secret: cookies[:_durak_player_secret])
+    player.update!(game_params)
+    game.add_player(player)
+
+    redirect_to game
+  end
+
+  private
+
+  def game_params
+    params.require(:game).permit(:name)
   end
 end

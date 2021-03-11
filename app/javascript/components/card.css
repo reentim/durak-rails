@@ -1,0 +1,12 @@
+.Card {
+  width: 130px;
+  height: 200px;
+  background-size: cover;
+  margin-right: 10px;
+  float: left;
+  box-sizing: border-box;
+}
+
+.selected {
+  margin-top: -20px;
+}

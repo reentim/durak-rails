@@ -1,18 +1,19 @@
 class PlayersController < ApplicationController
   def create
-  end
+    game = Game.find(params[:game_id])
 
-  def update
-    player = Player.find(params[:id])
-
+    cookies[:_durak_player_secret] ||= SecureRandom.hex
+    player = Player.find_or_create_by(secret: cookies[:_durak_player_secret])
     player.update!(player_params)
 
-    redirect_back(fallback_location: root_path)
+    game.add_player(player)
+
+    redirect_to game
   end
 
   private
 
   def player_params
-    params.require(:player).permit(:name)
+    params.permit(:name)
   end
 end

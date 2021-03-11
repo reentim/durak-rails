@@ -1,24 +1,30 @@
 <% unless @game.started? %>
   <%# TODO: full url %>
-  <%= url_for(@game) %>
+  <div class="url-note">
+    Share link
+  </div>
+  <div class="url">
+    <%= url_for(@game) %>
+  </div>
 <% end %>
 
-<pre>
-  <%= @game.state.to_yaml %>
-</pre>
+<%# <pre> %>
+<%#   <%= @game.state_for(@player).to_yaml %1> %>
+<%# </pre> %>
 
-<% if @player.name.nil? && !@game.started? %>
-  <%= form_with model: @player, local: true do |f| %>
+<% if @player.nil? && !@game.started? %>
+  <%= form_with model: @player, url: players_path, local: true, class: 'modal' do |f| %>
+    <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.text_field :name, placeholder: 'Player name' %>
     <%= f.submit %>
   <% end %>
 <% end %>
 
-<% if @game.created_by?(@player) && !@game.started? %>
-  <%= form_with url: game_commencements_path, local: true do |f| %>
+<% if @player && @game.created_by?(@player) && !@game.started? %>
+  <%= form_with url: game_commencements_path, local: true, class: 'modal' do |f| %>
     <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.submit 'Start game' %>
   <% end %>
 <% end %>
 
-<%= react_component("Game", { state: @game.state }) %>
+<%= react_component("Game", { state: @game.state_for(@player) }) %>
