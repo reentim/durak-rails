@@ -15,6 +15,7 @@ class Game extends React.Component {
 
     this.updateState = this.updateState.bind(this)
     this.onDragEnd = this.onDragEnd.bind(this)
+    this.adjustHand = this.adjustHand.bind(this)
   }
 
   componentDidMount() {
@@ -45,6 +46,27 @@ class Game extends React.Component {
     .catch(error => console.error(error))
   }
 
+  adjustHand(playerId, newHand) {
+    const gameId = this.props.state['game_id']
+    const secret = cookieValue('_durak_player_secret')
+
+    fetch(`/games/${gameId}/hand_adjustments`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        hand: newHand,
+        playerId: playerId,
+        secret: secret,
+      })
+    })
+    .then(response => response.json())
+    .then()
+    .catch((error) => { console.log(error) })
+  }
+
   onDragEnd(result) {
     const { destination, source, draggableId } = result
 
@@ -72,6 +94,7 @@ class Game extends React.Component {
     }
 
     this.setState(newState)
+    this.adjustHand(this.state.player_id, newHand)
   }
 
   render () {

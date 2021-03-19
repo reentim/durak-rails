@@ -50,6 +50,10 @@ class Game < ApplicationRecord
     state['players'].first == player.id
   end
 
+  def hand_for(player_id)
+    state['hands'][player_id]
+  end
+
   def state_for(player)
     return {} unless player.present?
 
