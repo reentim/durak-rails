@@ -27,10 +27,15 @@ class Game < ApplicationRecord
 
     state['started'] = true
     save!
+    ActionCable.server.broadcast('notification_channel', action: 'reload')
   end
 
   def player?(player)
     state['players'].include?(player.id)
+  end
+
+  def players
+    Player.where(id: state['players'])
   end
 
   def add_player(player)

@@ -8,6 +8,7 @@ gem 'pg', '>= 0.18', '< 2.0'
 gem 'puma', '~> 4.1'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.4'
 gem 'react-rails'
+gem 'redis'
 gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 4.0'
 

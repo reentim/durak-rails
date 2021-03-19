@@ -5,7 +5,7 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-    @player = Player.find_by(secret: cookies[:_durak_player_secret])
+    @player = @game.players.find_by(secret: cookies[:_durak_player_secret])
   end
 
   def create

@@ -27,4 +27,6 @@
   <% end %>
 <% end %>
 
-<%= react_component("Game", { state: @game.state_for(@player) }) %>
+<% if @player %>
+  <%= react_component("Game", { state: @game.state_for(@player) }) %>
+<% end %>

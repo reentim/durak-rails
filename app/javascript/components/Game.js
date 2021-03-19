@@ -2,7 +2,10 @@ import React from "react"
 import PropTypes from "prop-types"
 import { cookieValue } from 'utils/cookieValue'
 
+import { DragDropContext } from 'react-beautiful-dnd'
+
 import { Hand } from 'components/Hand'
+import consumer from 'src/cable'
 
 class Game extends React.Component {
   constructor(props) {
@@ -11,7 +14,21 @@ class Game extends React.Component {
     this.state = this.props.state
 
     this.updateState = this.updateState.bind(this)
-    this.handleCardClick = this.handleCardClick.bind(this)
+    this.onDragEnd = this.onDragEnd.bind(this)
+  }
+
+  componentDidMount() {
+    consumer.subscriptions.create({
+      channel: 'NotificationChannel'
+    }, {
+      connected: () => console.log('connected'),
+      disconnected: () => console.log('disconnected'),
+      received: data => this.updateState()
+    })
+  }
+
+  componentWillUnmount() {
+    consumer.disconnect()
   }
 
   updateState() {
@@ -28,29 +45,49 @@ class Game extends React.Component {
     .catch(error => console.error(error))
   }
 
-  handleCardClick(clickedCard) {
-    const cards = this.state.selectedCards.concat()
+  onDragEnd(result) {
+    const { destination, source, draggableId } = result
 
-    if (cards.some(card => card === clickedCard)) {
-      cards.splice(cards.indexOf(clickedCard), 1)
-    } else {
-      cards.push(clickedCard)
+    if (!destination) {
+      return
     }
 
-    this.setState({
-      selectedCards: cards,
-    })
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return
+    }
+
+    const newHand = this.state.hands[this.state.player_id].concat()
+    newHand.splice(source.index, 1)
+    newHand.splice(destination.index, 0, draggableId)
+
+    const newState = {
+      ...this.state,
+      hands: {
+        ...this.state.hands,
+        [this.state.player_id]: newHand,
+      }
+    }
+
+    this.setState(newState)
   }
 
   render () {
+    const playerName = this.state.names[this.state.player_id]
+    const otherPlayers = this.state.players.filter(id => id !== this.state.player_id)
+
     return (
       <React.Fragment>
-        <Hand
-          handleCardClick={this.handleCardClick}
-          selected={this.state.selectedCards}
-          cards={this.state.hands[this.state.player_id]} />
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Hand
+            key="hand-1"
+            playerName={playerName}
+            cards={this.state.hands[this.state.player_id]} />
+        </DragDropContext>
       </React.Fragment>
-    );
+    )
   }
 }
 
