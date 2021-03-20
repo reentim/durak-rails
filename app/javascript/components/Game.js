@@ -1,11 +1,16 @@
-import React from "react"
 import PropTypes from "prop-types"
+import React from "react"
+import consumer from 'src/cable'
+import styled from 'styled-components'
+import { DragDropContext } from 'react-beautiful-dnd'
 import { cookieValue } from 'utils/cookieValue'
 
-import { DragDropContext } from 'react-beautiful-dnd'
-
 import { Hand } from 'components/Hand'
-import consumer from 'src/cable'
+import { AttackArea } from 'components/AttackArea'
+
+const AttackContainer = styled.div`
+  display: flex;
+`
 
 class Game extends React.Component {
   constructor(props) {
@@ -68,6 +73,7 @@ class Game extends React.Component {
   }
 
   onDragEnd(result) {
+    console.log(result)
     const { destination, source, draggableId } = result
 
     if (!destination) {
@@ -81,33 +87,65 @@ class Game extends React.Component {
       return
     }
 
-    const newHand = this.state.hands[this.state.player_id].concat()
-    newHand.splice(source.index, 1)
-    newHand.splice(destination.index, 0, draggableId)
+    if (source.droppableId === destination.droppableId) {
+      const newHand = this.state.hands[this.state.player_id]
+      newHand.splice(source.index, 1)
+      newHand.splice(destination.index, 0, draggableId)
 
-    const newState = {
-      ...this.state,
-      hands: {
-        ...this.state.hands,
-        [this.state.player_id]: newHand,
+      const newState = {
+        ...this.state,
+        hands: {
+          ...this.state.hands,
+          [this.state.player_id]: newHand,
+        }
       }
+
+      this.setState(newState)
+      this.adjustHand(this.state.player_id, newHand)
     }
 
-    this.setState(newState)
-    this.adjustHand(this.state.player_id, newHand)
+    if (source.droppableId !== destination.droppableId) {
+      const newHand = this.state.hands[this.state.player_id]
+      const newAttacks = this.state.attacks
+
+      newHand.splice(source.index, 1)
+      newAttacks[parseInt(destination.droppableId)] = draggableId
+
+      const newState = {
+        ...this.state,
+        attacks: newAttacks,
+        hands: {
+          ...this.state.hands,
+          [this.state.player_id]: newHand,
+        }
+      }
+
+      this.setState(newState)
+    }
   }
 
   render () {
     const playerName = this.state.names[this.state.player_id]
     const otherPlayers = this.state.players.filter(id => id !== this.state.player_id)
+    const defenderHand = this.state.hands[this.state.defender]
 
     return (
       <React.Fragment>
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Hand
+            droppableId="hand"
             key="hand-1"
             playerName={playerName}
             cards={this.state.hands[this.state.player_id]} />
+          <AttackContainer>
+            {defenderHand.map((x, i) =>
+              <AttackArea
+                index={i}
+                attack={this.state.attacks[i]}
+                droppableId={`${i}`}
+                key={i} />
+            )}
+          </AttackContainer>
         </DragDropContext>
       </React.Fragment>
     )

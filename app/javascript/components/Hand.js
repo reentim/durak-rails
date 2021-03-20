@@ -5,7 +5,7 @@ import { Droppable } from 'react-beautiful-dnd'
 
 export const Hand = (props) => {
   return(
-    <Droppable droppableId="1" direction="horizontal">
+    <Droppable droppableId="hand" direction="horizontal">
       {(provided) => (
         <div
           ref={provided.innerRef}

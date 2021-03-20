@@ -6,6 +6,7 @@ class Game < ApplicationRecord
       players: [],
       hands: {},
       deck: [],
+      attacks: Array.new(6),
     })
   end
 
@@ -26,6 +27,7 @@ class Game < ApplicationRecord
     end
 
     state['started'] = true
+    state['defender'] = state['players'].second
     save!
     ActionCable.server.broadcast('notification_channel', action: 'reload')
   end
