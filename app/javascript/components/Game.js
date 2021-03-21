@@ -5,11 +5,16 @@ import styled from 'styled-components'
 import { DragDropContext } from 'react-beautiful-dnd'
 import { cookieValue } from 'utils/cookieValue'
 
-import { Hand } from 'components/Hand'
 import { AttackArea } from 'components/AttackArea'
+import { DefenceArea } from 'components/DefenceArea'
+import { Hand } from 'components/Hand'
 
 const AttackContainer = styled.div`
   display: flex;
+`
+const DefenceContainer = styled.div`
+  display: flex;
+  margin-top: -100px;
 `
 
 class Game extends React.Component {
@@ -72,6 +77,25 @@ class Game extends React.Component {
     .catch((error) => { console.log(error) })
   }
 
+  defend(card, defences) {
+    const gameId = this.props.state['game_id']
+
+    fetch(`/games/${gameId}/defences`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        defences: defences,
+        card: card,
+      })
+    })
+    .then(response => response.json())
+    .then()
+    .catch((error) => { console.log(error) })
+  }
+
   attack(card, attacks) {
     const gameId = this.props.state['game_id']
 
@@ -124,10 +148,6 @@ class Game extends React.Component {
     }
 
     if (destination.droppableId.split('-')[0] === 'attackArea') {
-      if (this.state.player_id !== this.state.attacker) {
-        return
-      }
-
       const newHand = this.state.hands[this.state.player_id]
       const newAttacks = this.state.attacks
 
@@ -146,6 +166,26 @@ class Game extends React.Component {
       this.setState(newState)
       this.attack(draggableId, newAttacks)
     }
+
+    if (destination.droppableId.split('-')[0] === 'defenceArea') {
+      const newHand = this.state.hands[this.state.player_id]
+      const newDefences = this.state.defences
+
+      newHand.splice(source.index, 1)
+      newDefences[parseInt(destination.droppableId.split('-')[1])] = draggableId
+
+      const newState = {
+        ...this.state,
+        defences: newDefences,
+        hands: {
+          ...this.state.hands,
+          [this.state.player_id]: newHand,
+        }
+      }
+
+      this.setState(newState)
+      this.defend(draggableId, newDefences)
+    }
   }
 
   render () {
@@ -153,6 +193,7 @@ class Game extends React.Component {
     const otherPlayers = this.state.players.filter(id => id !== this.state.player_id)
     const defenderHand = this.state.hands[this.state.defender]
     const isAttacker = this.state.attacker === this.state.player_id
+    const isDefender = this.state.defender === this.state.player_id
 
     return (
       <React.Fragment>
@@ -163,15 +204,25 @@ class Game extends React.Component {
             playerName={playerName}
             cards={this.state.hands[this.state.player_id]} />
           <AttackContainer>
-            {defenderHand.map((x, i) =>
+            {new Array(6).fill().map((x, i) =>
               <AttackArea
                 index={i}
-                attack={this.state.attacks[i]}
+                card={this.state.attacks[i]}
                 droppableId={`attackArea-${i}`}
                 available={isAttacker}
                 key={i} />
             )}
           </AttackContainer>
+          <DefenceContainer>
+            {this.state.attacks.map((x, i) =>
+              <DefenceArea
+                index={i}
+                card={this.state.defences[i]}
+                droppableId={`defenceArea-${i}`}
+                available={isDefender}
+                key={i} />
+            )}
+          </DefenceContainer>
         </DragDropContext>
       </React.Fragment>
     )

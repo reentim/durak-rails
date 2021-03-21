@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resource :state, only: [:show]
     resource :hand_adjustments, only: [:create]
     resource :attacks, only: [:create]
+    resource :defences, only: [:create]
   end
   resources :players, only: [:create]
 end
