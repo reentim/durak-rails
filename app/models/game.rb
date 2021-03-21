@@ -26,7 +26,9 @@ class Game < ApplicationRecord
       state['hands'][id] = state['deck'].pop(6)
     end
 
+    state['attacks'] = Array.new(6)
     state['started'] = true
+    state['attacker'] = state['players'].first
     state['defender'] = state['players'].second
     save!
     ActionCable.server.broadcast('notification_channel', action: 'reload')

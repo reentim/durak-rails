@@ -19,7 +19,7 @@ export const AttackArea = (props) => {
     <BasicCard value={props.attack} />
   )
 
-  const empty = (
+  const droppableSlot = (
     <Droppable droppableId={props.droppableId} direction="horizontal">
       {(provided) => (
         <Slot
@@ -31,7 +31,10 @@ export const AttackArea = (props) => {
       )}
     </Droppable>
   )
+
+  const slot = <Slot />
+
   return (
-    props.attack ? card : empty
+    props.attack ? card : props.available ? droppableSlot : slot
   )
 }

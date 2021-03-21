@@ -72,6 +72,25 @@ class Game extends React.Component {
     .catch((error) => { console.log(error) })
   }
 
+  attack(card, attacks) {
+    const gameId = this.props.state['game_id']
+
+    fetch(`/games/${gameId}/attacks`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        attacks: attacks,
+        card: card,
+      })
+    })
+    .then(response => response.json())
+    .then()
+    .catch((error) => { console.log(error) })
+  }
+
   onDragEnd(result) {
     console.log(result)
     const { destination, source, draggableId } = result
@@ -104,12 +123,16 @@ class Game extends React.Component {
       this.adjustHand(this.state.player_id, newHand)
     }
 
-    if (source.droppableId !== destination.droppableId) {
+    if (destination.droppableId.split('-')[0] === 'attackArea') {
+      if (this.state.player_id !== this.state.attacker) {
+        return
+      }
+
       const newHand = this.state.hands[this.state.player_id]
       const newAttacks = this.state.attacks
 
       newHand.splice(source.index, 1)
-      newAttacks[parseInt(destination.droppableId)] = draggableId
+      newAttacks[parseInt(destination.droppableId.split('-')[1])] = draggableId
 
       const newState = {
         ...this.state,
@@ -121,6 +144,7 @@ class Game extends React.Component {
       }
 
       this.setState(newState)
+      this.attack(draggableId, newAttacks)
     }
   }
 
@@ -128,6 +152,7 @@ class Game extends React.Component {
     const playerName = this.state.names[this.state.player_id]
     const otherPlayers = this.state.players.filter(id => id !== this.state.player_id)
     const defenderHand = this.state.hands[this.state.defender]
+    const isAttacker = this.state.attacker === this.state.player_id
 
     return (
       <React.Fragment>
@@ -142,7 +167,8 @@ class Game extends React.Component {
               <AttackArea
                 index={i}
                 attack={this.state.attacks[i]}
-                droppableId={`${i}`}
+                droppableId={`attackArea-${i}`}
+                available={isAttacker}
                 key={i} />
             )}
           </AttackContainer>
