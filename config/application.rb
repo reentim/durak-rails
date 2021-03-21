@@ -31,5 +31,6 @@ module DurakRails
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    config.action_dispatch.perform_deep_munge = false
   end
 end
