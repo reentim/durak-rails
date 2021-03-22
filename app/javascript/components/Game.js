@@ -228,7 +228,7 @@ class Game extends React.Component {
                 index={i}
                 card={this.state.attacks[i]}
                 droppableId={`attackArea-${i}`}
-                available={isAttacker}
+                available={!isDefender}
                 key={i} />
             )}
             {

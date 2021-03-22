@@ -109,8 +109,6 @@ class Game < ApplicationRecord
     state
   end
 
-  private
-
   def rank(card)
     card.split('-').first.to_i
   end
