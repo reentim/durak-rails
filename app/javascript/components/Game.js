@@ -16,6 +16,10 @@ const DefenceContainer = styled.div`
   display: flex;
   margin-top: -100px;
 `
+const ConcedeButton = styled.button`
+  margin-top: auto;
+  height: 30px;
+`
 
 class Game extends React.Component {
   constructor(props) {
@@ -25,7 +29,7 @@ class Game extends React.Component {
 
     this.updateState = this.updateState.bind(this)
     this.onDragEnd = this.onDragEnd.bind(this)
-    this.adjustHand = this.adjustHand.bind(this)
+    this.concedeAttack = this.concedeAttack.bind(this)
   }
 
   componentDidMount() {
@@ -115,6 +119,21 @@ class Game extends React.Component {
     .catch((error) => { console.log(error) })
   }
 
+  concedeAttack() {
+    const gameId = this.props.state['game_id']
+
+    fetch(`/games/${gameId}/concessions`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then()
+    .catch((error) => { console.log(error) })
+  }
+
   onDragEnd(result) {
     console.log(result)
     const { destination, source, draggableId } = result
@@ -194,6 +213,7 @@ class Game extends React.Component {
     const defenderHand = this.state.hands[this.state.defender]
     const isAttacker = this.state.attacker === this.state.player_id
     const isDefender = this.state.defender === this.state.player_id
+    const attackCount = this.state.attacks.filter(n => n).length
 
     return (
       <React.Fragment>
@@ -201,7 +221,6 @@ class Game extends React.Component {
           <Hand
             droppableId="hand"
             key="hand-1"
-            playerName={playerName}
             cards={this.state.hands[this.state.player_id]} />
           <AttackContainer>
             {new Array(6).fill().map((x, i) =>
@@ -212,6 +231,10 @@ class Game extends React.Component {
                 available={isAttacker}
                 key={i} />
             )}
+            {
+              isDefender && attackCount > 0 &&
+                <ConcedeButton onClick={this.concedeAttack}>Take all</ConcedeButton>
+            }
           </AttackContainer>
           <DefenceContainer>
             {this.state.attacks.map((x, i) =>
@@ -224,6 +247,11 @@ class Game extends React.Component {
             )}
           </DefenceContainer>
         </DragDropContext>
+        {this.state.player_id}
+        <br />
+        {playerName}
+        <br />
+        {this.state.trump}
       </React.Fragment>
     )
   }

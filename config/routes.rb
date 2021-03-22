@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resource :hand_adjustments, only: [:create]
     resource :attacks, only: [:create]
     resource :defences, only: [:create]
+    resource :concessions, only: [:create]
   end
   resources :players, only: [:create]
 end

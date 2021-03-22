@@ -16,16 +16,23 @@ class Game < ApplicationRecord
     ].any?
   end
 
-  def rank(card)
-    card.split('-').first.to_i
+  def end_round(advance_by = 1)
+    state['attacks'] = Array.new(6)
+    state['defences'] = Array.new(6)
+    state['players'].each do |player|
+      hand = state['hands'][player]
+      if hand.count < 6
+        hand.concat(state['deck'].shift(6 - hand.count))
+      end
+    end
+    state['players'].rotate!(advance_by)
+    state['attacker'] = state['players'].first
+    state['defender'] = state['players'].second
+    save!
   end
 
-  def suit(card)
-    card.split('-').last
-  end
-
-  def trump?(card)
-    suit(card) == state['trump']
+  def conceede_round
+    end_round(2)
   end
 
   def started?
@@ -100,5 +107,19 @@ class Game < ApplicationRecord
     end
 
     state
+  end
+
+  private
+
+  def rank(card)
+    card.split('-').first.to_i
+  end
+
+  def suit(card)
+    card.split('-').last
+  end
+
+  def trump?(card)
+    suit(card) == state['trump']
   end
 end
