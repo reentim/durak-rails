@@ -214,6 +214,7 @@ class Game extends React.Component {
     const isAttacker = this.state.attacker === this.state.player_id
     const isDefender = this.state.defender === this.state.player_id
     const attackCount = this.state.attacks.filter(n => n).length
+    const allowedAttacks = Math.min(defenderHand.concat(this.state.defences.filter(n => n)).length, 6)
 
     return (
       <React.Fragment>
@@ -223,7 +224,7 @@ class Game extends React.Component {
             key="hand-1"
             cards={this.state.hands[this.state.player_id]} />
           <AttackContainer>
-            {new Array(6).fill().map((x, i) =>
+            {new Array(allowedAttacks).fill().map((x, i) =>
               <AttackArea
                 index={i}
                 card={this.state.attacks[i]}
@@ -237,7 +238,7 @@ class Game extends React.Component {
             }
           </AttackContainer>
           <DefenceContainer>
-            {this.state.attacks.map((x, i) =>
+            {new Array(allowedAttacks).fill().map((x, i) =>
               <DefenceArea
                 index={i}
                 card={this.state.defences[i]}
