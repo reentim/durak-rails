@@ -8,6 +8,8 @@ const Slot = styled.div`
   height: 200px;
   margin-right: 10px;
   background-color: rgb(0, 100, 0);
+  box-sizing: border-box;
+  border: ${props => (props.isDraggingOver ? '2px solid rgba(0,0,0,0.3)' : 'none')};
   border-radius: 10px;
 `
 
@@ -18,10 +20,11 @@ export const AttackArea = (props) => {
 
   const droppableSlot = (
     <Droppable droppableId={props.droppableId} direction="horizontal">
-      {(provided) => (
+      {(provided, snapshot) => (
         <Slot
           ref={provided.innerRef}
           {...provided.droppableProps}
+          isDraggingOver={snapshot.isDraggingOver}
           >
           {provided.placeholder}
         </Slot>

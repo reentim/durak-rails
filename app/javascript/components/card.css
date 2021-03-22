@@ -15,6 +15,6 @@
 }
 
 .Card.deck:first-child {
-  transform: translate(40px, 0px) rotate(270deg);
+  transform: translate(-22px, 0px);
   z-index: -1;
 }

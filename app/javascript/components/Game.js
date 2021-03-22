@@ -219,7 +219,7 @@ class Game extends React.Component {
 
     return (
       <React.Fragment>
-        <Deck cards={this.state.deck} />
+        { this.state.deck.length > 0 && <Deck cards={this.state.deck} />}
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Hand
             droppableId="hand"
