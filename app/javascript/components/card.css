@@ -9,3 +9,12 @@
 .selected {
   margin-top: -20px;
 }
+
+.Card.deck {
+  margin-right: -128px;
+}
+
+.Card.deck:first-child {
+  transform: translate(40px, 0px) rotate(270deg);
+  z-index: -1;
+}

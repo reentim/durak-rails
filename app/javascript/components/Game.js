@@ -8,6 +8,7 @@ import { cookieValue } from 'utils/cookieValue'
 import { AttackArea } from 'components/AttackArea'
 import { DefenceArea } from 'components/DefenceArea'
 import { Hand } from 'components/Hand'
+import { Deck } from 'components/Deck'
 
 const AttackContainer = styled.div`
   display: flex;
@@ -218,6 +219,7 @@ class Game extends React.Component {
 
     return (
       <React.Fragment>
+        <Deck cards={this.state.deck} />
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Hand
             droppableId="hand"
