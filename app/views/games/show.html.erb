@@ -1,3 +1,5 @@
+<div hidden id="game_id"><%= @game.id %></div>
+
 <% if !@game.started? && @game.created_by?(@player) %>
   <%# TODO: full url %>
   <div class="url-note">
@@ -31,10 +33,6 @@
     <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.submit 'Start game' %>
   <% end %>
-<% end %>
-
-<% unless @player %>
-  <h2>No player!</h2>
 <% end %>
 
 <% if @game.started? %>

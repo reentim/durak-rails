@@ -47,8 +47,10 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
+    const gameId = document.getElementById('game_id').textContent
     consumer.subscriptions.create({
-      channel: 'NotificationChannel'
+      channel: 'NotificationChannel',
+      game_id: gameId,
     }, {
       connected: () => console.log('connected'),
       disconnected: () => console.log('disconnected'),
@@ -61,8 +63,8 @@ class Game extends React.Component {
   }
 
   updateState() {
-    const gameId = this.props.state['game_id']
-    const playerId = this.props.state['player_id']
+    const gameId = this.state.game_id
+    const playerId = this.state.player_id
     const secret = cookieValue('_durak_player_secret')
 
     fetch(`/games/${gameId}/state?` + new URLSearchParams({

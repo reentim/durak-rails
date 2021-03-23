@@ -20,6 +20,6 @@ class DefencesController < ApplicationController
       render json: {}, status: :unauthorized
     end
 
-    ActionCable.server.broadcast('notification_channel', action: 'reload')
+    ActionCable.server.broadcast("notification_channel-#{game.id}", action: 'reload')
   end
 end

@@ -66,7 +66,7 @@ class Game < ApplicationRecord
     state['trump'] = suit(state['deck'][-1])
     save!
 
-    ActionCable.server.broadcast('notification_channel', action: 'reload')
+    ActionCable.server.broadcast("notification_channel-#{id}", action: 'reload')
   end
 
   def player?(player)
