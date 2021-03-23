@@ -1,22 +1,28 @@
-<% unless @game.started? %>
+<% if !@game.started? && @game.created_by?(@player) %>
   <%# TODO: full url %>
   <div class="url-note">
     Share link
   </div>
-  <div class="url">
+  <div class="url" id="url">
     <%= url_for(@game) %>
   </div>
 <% end %>
 
-<%# <pre> %>
-<%#   <%= @game.state_for(@player).to_yaml %1> %>
-<%# </pre> %>
+<% if !@game.started? && !@game.created_by?(@player) && @player %>
+  <div class="url">
+    Waiting for <%= @game.creator.name %> to start the game
+  </div>
+<% end %>
+
+<% if !@game.started? %>
+  <%= react_component("WaitingList", { names: @game.players.map(&:name) }) %>
+<% end %>
 
 <% if @player.nil? && !@game.started? %>
   <%= form_with model: @player, url: players_path, local: true, class: 'modal' do |f| %>
     <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.text_field :name, placeholder: 'Player name' %>
-    <%= f.submit %>
+    <%= f.submit 'Join game' %>
   <% end %>
 <% end %>
 
@@ -27,6 +33,10 @@
   <% end %>
 <% end %>
 
-<% if @player %>
+<% unless @player %>
+  <h2>No player!</h2>
+<% end %>
+
+<% if @game.started? %>
   <%= react_component("Game", { state: @game.state_for(@player) }) %>
 <% end %>

@@ -10,6 +10,7 @@ class Game < ApplicationRecord
   end
 
   def beats_card?(attacker, defender)
+    return true if [attacker, defender].all?(&:nil?)
     [
       trump?(attacker) && !trump?(defender),
       suit(attacker) == suit(defender) && rank(attacker) > rank(defender)
@@ -33,6 +34,12 @@ class Game < ApplicationRecord
 
   def conceede_round
     end_round(2)
+  end
+
+  def attacks_covered?
+    state['attacks'].all? { |card|
+      beats_card?(state['defences'][state['attacks'].index(card)], card)
+    }
   end
 
   def started?
@@ -79,7 +86,11 @@ class Game < ApplicationRecord
   end
 
   def created_by?(player)
-    state['players'].first == player.id
+    creator == player
+  end
+
+  def creator
+    Player.where(id: state['created_by']).first
   end
 
   def hand_for(player_id)

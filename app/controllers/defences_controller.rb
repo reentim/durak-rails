@@ -13,10 +13,6 @@ class DefencesController < ApplicationController
       game.state['defences'] = params[:defences]
       game.state['hands'][player.id].delete(params[:card])
 
-      if game.state['attacks'].compact.count == game.state['defences'].compact.count
-        game.end_round
-      end
-
       game.save!
 
       render json: {}, status: :ok

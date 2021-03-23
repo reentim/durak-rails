@@ -15,7 +15,11 @@ class GamesController < ApplicationController
     cookies[:_durak_player_secret] ||= SecureRandom.hex
     player = Player.find_or_create_by(secret: cookies[:_durak_player_secret])
     player.update!(game_params)
+
     game.add_player(player)
+
+    game.state['created_by'] = player.id
+    game.save!
 
     redirect_to game
   end

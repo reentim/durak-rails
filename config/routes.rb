@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resource :attacks, only: [:create]
     resource :defences, only: [:create]
     resource :concessions, only: [:create]
+    resource :round_claims, only: [:create]
   end
   resources :players, only: [:create]
 end

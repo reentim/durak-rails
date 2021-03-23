@@ -9,6 +9,7 @@ import { AttackArea } from 'components/AttackArea'
 import { DefenceArea } from 'components/DefenceArea'
 import { Hand } from 'components/Hand'
 import { Deck } from 'components/Deck'
+import { OtherHand } from 'components/OtherHand'
 
 const AttackContainer = styled.div`
   display: flex;
@@ -21,6 +22,17 @@ const ConcedeButton = styled.button`
   margin-top: auto;
   height: 30px;
 `
+const ClaimRoundButton = styled.button`
+  margin-top: auto;
+  height: 30px;
+`
+const NameIndicator = styled.div`
+  position: absolute;
+  bottom: 220px;
+`
+const OtherHandsContainer = styled.div`
+  display: flex;
+`
 
 class Game extends React.Component {
   constructor(props) {
@@ -31,6 +43,7 @@ class Game extends React.Component {
     this.updateState = this.updateState.bind(this)
     this.onDragEnd = this.onDragEnd.bind(this)
     this.concedeAttack = this.concedeAttack.bind(this)
+    this.claimRound = this.claimRound.bind(this)
   }
 
   componentDidMount() {
@@ -135,6 +148,21 @@ class Game extends React.Component {
     .catch((error) => { console.log(error) })
   }
 
+  claimRound() {
+    const gameId = this.props.state['game_id']
+
+    fetch(`/games/${gameId}/round_claims`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then()
+    .catch((error) => { console.log(error) })
+  }
+
   onDragEnd(result) {
     console.log(result)
     const { destination, source, draggableId } = result
@@ -215,11 +243,21 @@ class Game extends React.Component {
     const isAttacker = this.state.attacker === this.state.player_id
     const isDefender = this.state.defender === this.state.player_id
     const attackCount = this.state.attacks.filter(n => n).length
-    const allowedAttacks = Math.min(defenderHand.concat(this.state.defences.filter(n => n)).length, 6)
+    const defenceCount = this.state.defences.filter(n => n).length
+    const allowedAttacks = Math.min(defenderHand.length + defenceCount, 6)
+    const defenderName = this.state.names[this.state.defender]
+    const gameStarted = this.state['started']
 
     return (
       <React.Fragment>
-        { this.state.deck.length > 0 && <Deck cards={this.state.deck} />}
+        <OtherHandsContainer>
+          {otherPlayers.map((x, i) =>
+            <OtherHand
+              key={i}
+              cards={this.state.hands[x]}
+              name={this.state.names[x]} />
+          )}
+        </OtherHandsContainer>
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Hand
             droppableId="hand"
@@ -235,9 +273,14 @@ class Game extends React.Component {
                 key={i} />
             )}
             {
-              isDefender && attackCount > 0 &&
+              isDefender && attackCount > 0 && attackCount !== defenceCount &&
                 <ConcedeButton onClick={this.concedeAttack}>Take all</ConcedeButton>
             }
+            {
+              isDefender && attackCount > 0 && attackCount === defenceCount &&
+                <ClaimRoundButton onClick={this.claimRound}>Claim round</ClaimRoundButton>
+            }
+            { this.state.deck.length > 0 && <Deck cards={this.state.deck} />}
           </AttackContainer>
           <DefenceContainer>
             {new Array(allowedAttacks).fill().map((x, i) =>
@@ -250,11 +293,10 @@ class Game extends React.Component {
             )}
           </DefenceContainer>
         </DragDropContext>
-        {this.state.player_id}
-        <br />
-        {playerName}
-        <br />
-        {this.state.trump}
+        <NameIndicator>
+          {playerName}
+          {isAttacker && <span> ➡️ {defenderName}</span>}
+        </NameIndicator>
       </React.Fragment>
     )
   }
