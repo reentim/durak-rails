@@ -9,6 +9,7 @@ class Game < ApplicationRecord
       deck: [],
       attacks: [],
       defences: [],
+      finishedPlayers: [],
     })
   end
 
@@ -30,8 +31,8 @@ class Game < ApplicationRecord
       end
     end
     state['players'].rotate!(advance_by)
-    state['attacker'] = state['players'].first
-    state['defender'] = state['players'].second
+    state['attacker'] = (state['players'] - state['finishedPlayers']).first
+    state['defender'] = (state['players'] - state['finishedPlayers']).second
     save!
   end
 
