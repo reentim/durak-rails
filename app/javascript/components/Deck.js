@@ -11,7 +11,7 @@ const Container = styled.div`
 export const Deck = (props) => {
   return(
     <Container>
-      { props.cards.reverse().map((card, index) => (
+      { props.cards.concat().reverse().map((card, index) => (
           <BasicCard deck={true} key={index} value={card} />
       ))}
     </Container>

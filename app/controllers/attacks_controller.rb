@@ -12,6 +12,11 @@ class AttacksController < ApplicationController
     )
       game.state['attacks'] = params[:attacks]
       game.state['hands'][player.id].delete(params[:card])
+
+      if game.state['hands'][player.id] == [] && game.state['deck'] == []
+        game.state['players'].slice!(game.state['players'].index(player.id))
+      end
+
       game.save!
 
       render json: {}, status: :ok

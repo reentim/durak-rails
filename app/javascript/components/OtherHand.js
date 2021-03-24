@@ -21,6 +21,7 @@ export const OtherHand = (props) => {
       ))}
       <NameContainer>
         {props.name}
+        {props.isAttacker && <span>🌟</span>}
       </NameContainer>
     </Container>
   )

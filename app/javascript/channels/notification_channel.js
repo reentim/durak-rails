@@ -5,7 +5,6 @@ window.onload = (e) => {
 
   consumer.subscriptions.create({channel: "NotificationChannel", game_id: gameId }, {
     received(data) {
-      console.log('rails', data)
     }
   })
 }

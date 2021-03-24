@@ -8,6 +8,8 @@ class PlayersController < ApplicationController
 
     game.add_player(player)
 
+    ActionCable.server.broadcast("notification_channel-#{game.id}", action: 'reload')
+
     redirect_to game
   end
 

@@ -3,9 +3,12 @@ class Game < ApplicationRecord
     update!(state: {
       game_id: id,
       started: false,
-      players: [],
       hands: {},
+      names: {},
+      players: [],
       deck: [],
+      attacks: [],
+      defences: [],
     })
   end
 
@@ -58,6 +61,8 @@ class Game < ApplicationRecord
       state['hands'][id] = state['deck'].pop(6)
     end
 
+    state['fixedPlayers'] = state['players']
+
     state['attacks'] = Array.new(6)
     state['defences'] = Array.new(6)
     state['started'] = true
@@ -98,14 +103,11 @@ class Game < ApplicationRecord
   end
 
   def state_for(player)
-    return {} unless player.present?
-
-    state['names'] = {}
     state['players'].each do |id|
       state['names'][id] = Player.find(id).name
     end
 
-    state['player_id'] = player.id
+    state['player_id'] = player&.id
 
     state['deck'] = state['deck'].map { |card| card == state['deck'].last ? card : 'unknown' }
 

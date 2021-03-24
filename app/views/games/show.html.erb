@@ -1,27 +1,9 @@
 <div hidden id="game_id"><%= @game.id %></div>
 
-<% if !@game.started? && @game.created_by?(@player) %>
-  <%# TODO: full url %>
-  <div class="url-note">
-    Share link
-  </div>
-  <div class="url" id="url">
-    <%= url_for(@game) %>
-  </div>
-<% end %>
-
-<% if !@game.started? && !@game.created_by?(@player) && @player %>
-  <div class="url">
-    Waiting for <%= @game.creator.name %> to start the game
-  </div>
-<% end %>
-
-<% if !@game.started? %>
-  <%= react_component("WaitingList", { names: @game.players.map(&:name) }) %>
-<% end %>
+<%= react_component("Game", { state: @game.state_for(@player) }) %>
 
 <% if @player.nil? && !@game.started? %>
-  <%= form_with model: @player, url: players_path, local: true, class: 'modal' do |f| %>
+  <%= form_with model: @player, url: players_path, local: true, class: 'center' do |f| %>
     <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.text_field :name, placeholder: 'Player name' %>
     <%= f.submit 'Join game' %>
@@ -29,12 +11,8 @@
 <% end %>
 
 <% if @player && @game.created_by?(@player) && !@game.started? %>
-  <%= form_with url: game_commencements_path, local: true, class: 'modal' do |f| %>
+  <%= form_with url: game_commencements_path, local: true, class: 'center' do |f| %>
     <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.submit 'Start game' %>
   <% end %>
-<% end %>
-
-<% if @game.started? %>
-  <%= react_component("Game", { state: @game.state_for(@player) }) %>
 <% end %>

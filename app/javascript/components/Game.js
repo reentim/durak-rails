@@ -33,6 +33,10 @@ const NameIndicator = styled.div`
 const OtherHandsContainer = styled.div`
   display: flex;
 `
+const PreGame = styled.div`
+  text-align: center;
+  margin-bottom: 40px;
+`
 
 class Game extends React.Component {
   constructor(props) {
@@ -100,6 +104,11 @@ class Game extends React.Component {
   defend(card, defences) {
     const gameId = this.props.state['game_id']
 
+    this.setState({
+      ...this.state,
+      roundClaimable: false,
+    })
+
     fetch(`/games/${gameId}/defences`, {
       method: 'POST',
       headers: {
@@ -112,7 +121,15 @@ class Game extends React.Component {
       })
     })
     .then(response => response.json())
-    .then()
+    .then(
+      setTimeout(() =>
+        this.setState({
+          ...this.state,
+          roundClaimable: true,
+        }),
+        5000
+      )
+    )
     .catch((error) => { console.log(error) })
   }
 
@@ -240,8 +257,9 @@ class Game extends React.Component {
 
   render () {
     const playerName = this.state.names[this.state.player_id]
-    const otherPlayers = this.state.players.filter(id => id !== this.state.player_id)
-    const defenderHand = this.state.hands[this.state.defender]
+    const fixedPlayers = this.state.fixedPlayers || []
+    const otherPlayers = fixedPlayers.filter(id => id !== this.state.player_id)
+    const defenderHand = this.state.hands[this.state.defender] || []
     const isAttacker = this.state.attacker === this.state.player_id
     const isDefender = this.state.defender === this.state.player_id
     const attackCount = this.state.attacks.filter(n => n).length
@@ -252,53 +270,81 @@ class Game extends React.Component {
 
     return (
       <React.Fragment>
-        <OtherHandsContainer>
-          {otherPlayers.map((x, i) =>
-            <OtherHand
-              key={i}
-              cards={this.state.hands[x]}
-              name={this.state.names[x]} />
-          )}
-        </OtherHandsContainer>
-        <DragDropContext onDragEnd={this.onDragEnd}>
-          <Hand
-            droppableId="hand"
-            key="hand-1"
-            cards={this.state.hands[this.state.player_id]} />
-          <AttackContainer>
-            {new Array(allowedAttacks).fill().map((x, i) =>
-              <AttackArea
-                index={i}
-                card={this.state.attacks[i]}
-                droppableId={`attackArea-${i}`}
-                available={!isDefender}
-                key={i} />
-            )}
-            {
-              isDefender && attackCount > 0 && attackCount !== defenceCount &&
-                <ConcedeButton onClick={this.concedeAttack}>Take all</ConcedeButton>
+        {!this.state.started &&
+          <div>
+            <div className="note">
+              Share this link ⬆️
+            </div>
+            {this.state.player_id !== this.state.created_by &&
+              this.state.player_id &&
+              <div className="note">
+                Waiting for {this.state.names[this.state.created_by]} to start the game
+              </div>
             }
-            {
-              isDefender && attackCount > 0 && attackCount === defenceCount &&
-                <ClaimRoundButton onClick={this.claimRound}>Claim round</ClaimRoundButton>
-            }
-            { this.state.deck.length > 0 && <Deck cards={this.state.deck} />}
-          </AttackContainer>
-          <DefenceContainer>
-            {new Array(allowedAttacks).fill().map((x, i) =>
-              <DefenceArea
-                index={i}
-                card={this.state.defences[i]}
-                droppableId={`defenceArea-${i}`}
-                available={isDefender}
-                key={i} />
-            )}
-          </DefenceContainer>
-        </DragDropContext>
-        <NameIndicator>
-          {playerName}
-          {isAttacker && <span> ➡️ {defenderName}</span>}
-        </NameIndicator>
+            <PreGame>
+              <h1>Durak game</h1>
+              {this.state.players.map((player, i) =>
+                <div key={i}>{this.state.names[player]}</div>
+              )}
+            </PreGame>
+          </div>
+        }
+        {this.state.started &&
+          <div>
+            <OtherHandsContainer>
+              {otherPlayers.map((player, i) =>
+                <OtherHand
+                  key={i}
+                  cards={this.state.hands[player]}
+                  name={this.state.names[player]}
+                  isAttacker={this.state.attacker === player} />
+              )}
+            </OtherHandsContainer>
+            <DragDropContext onDragEnd={this.onDragEnd}>
+              <Hand
+                droppableId="hand"
+                key="hand-1"
+                cards={this.state.hands[this.state.player_id]} />
+              <AttackContainer>
+                {new Array(allowedAttacks).fill().map((x, i) =>
+                  <AttackArea
+                    index={i}
+                    card={this.state.attacks[i]}
+                    droppableId={`attackArea-${i}`}
+                    available={!isDefender}
+                    key={i} />
+                )}
+                {
+                  isDefender && attackCount > 0 && attackCount !== defenceCount &&
+                    <ConcedeButton onClick={this.concedeAttack}>Take all</ConcedeButton>
+                }
+                {
+                  isDefender && attackCount > 0 && attackCount === defenceCount &&
+                    <ClaimRoundButton
+                      disabled={!this.state.roundClaimable}
+                      onClick={this.claimRound}>
+                      Claim round
+                    </ClaimRoundButton>
+                }
+                { this.state.deck.length > 0 && <Deck cards={this.state.deck} />}
+              </AttackContainer>
+              <DefenceContainer>
+                {new Array(allowedAttacks).fill().map((x, i) =>
+                  <DefenceArea
+                    index={i}
+                    card={this.state.defences[i]}
+                    droppableId={`defenceArea-${i}`}
+                    available={isDefender}
+                    key={i} />
+                )}
+              </DefenceContainer>
+            </DragDropContext>
+            <NameIndicator>
+              {playerName}
+              {isAttacker && <span> ➡️ {defenderName}</span>}
+            </NameIndicator>
+          </div>
+        }
       </React.Fragment>
     )
   }
