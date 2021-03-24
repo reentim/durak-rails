@@ -272,9 +272,11 @@ class Game extends React.Component {
       <React.Fragment>
         {!this.state.started &&
           <div>
-            <div className="note">
-              Share this link ⬆️
-            </div>
+            {this.state.player_id === this.state.created_by &&
+              <div className="note">
+                Share this link ⬆️
+              </div>
+            }
             {this.state.player_id !== this.state.created_by &&
               this.state.player_id &&
               <div className="note">
