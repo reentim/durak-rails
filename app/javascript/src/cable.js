@@ -1,6 +1,5 @@
 import { createConsumer } from '@rails/actioncable'
 
-const URL = 'wss://durak-rails.herokuapp.com/cable'
-const consumer = createConsumer(URL)
+const consumer = createConsumer()
 
 export default consumer
