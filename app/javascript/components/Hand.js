@@ -1,16 +1,22 @@
 import React from 'react'
+import styled from 'styled-components'
 import { Card } from 'components/Card'
-import './hand.css'
 import { Droppable } from 'react-beautiful-dnd'
+
+const Container = styled.div`
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+`
 
 export const Hand = (props) => {
   return(
     <Droppable droppableId="hand" direction="horizontal">
       {(provided) => (
-        <div
+        <Container
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className={`Hand ${props.other ? 'other' : ''}`}>
+          >
           {
             props.cards &&
               props.cards.map(
@@ -20,7 +26,7 @@ export const Hand = (props) => {
               )
           }
           {provided.placeholder}
-        </div>
+        </Container>
       )}
     </Droppable>
   )
