@@ -5,7 +5,7 @@ const Container = styled.div`
   width: 130px;
   height: 200px;
   background-size: cover;
-  margin-right: ${props => props.otherHand || props.deck ? '-128px' : '10px'};
+  margin-right: ${props => props.otherHand ? '-120px' : props.deck ? '-128px' : '10px'};
   box-sizing: border-box;
 
   &:first-child {
