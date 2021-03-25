@@ -301,10 +301,6 @@ class Game extends React.Component {
               )}
             </OtherHandsContainer>
             <DragDropContext onDragEnd={this.onDragEnd}>
-              <Hand
-                droppableId="hand"
-                key="hand-1"
-                cards={this.state.hands[this.state.player_id]} />
               <AttackContainer>
                 {new Array(6).fill().map((x, i) =>
                   <AttackArea
@@ -337,11 +333,15 @@ class Game extends React.Component {
                     key={i} />
                 )}
               </DefenceContainer>
+              <NameIndicator>
+                {playerName}
+                {isAttacker && <span> ➡️ {defenderName}</span>}
+              </NameIndicator>
+              <Hand
+                droppableId="hand"
+                key="hand-1"
+                cards={this.state.hands[this.state.player_id]} />
             </DragDropContext>
-            <NameIndicator>
-              {playerName}
-              {isAttacker && <span> ➡️ {defenderName}</span>}
-            </NameIndicator>
           </div>
         }
       </React.Fragment>

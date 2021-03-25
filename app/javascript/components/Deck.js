@@ -5,7 +5,7 @@ import { BasicCard } from 'components/BasicCard'
 const Container = styled.div`
   display: flex;
   margin-left: auto;
-  width: 150px;
+  width: 200px;
 `
 
 export const Deck = (props) => {
