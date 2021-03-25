@@ -34,12 +34,19 @@ h1.big.center {
   font-size: 400%;
 }
 
-input {
+input,
+button {
   font-size: 1em;
   font-family: monospace;
   padding: 10px;
   border-radius: 5px;
   border: 2px solid rgb(0, 100, 0);
+}
+
+input:hover,
+button:hover {
+  background-color: white;
+  cursor: pointer;
 }
 
 .note {

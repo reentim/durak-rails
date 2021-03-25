@@ -20,11 +20,9 @@ const DefenceContainer = styled.div`
 `
 const ConcedeButton = styled.button`
   margin-top: auto;
-  height: 30px;
 `
 const ClaimRoundButton = styled.button`
   margin-top: auto;
-  height: 30px;
 `
 const NameIndicator = styled.div`
   position: absolute;
