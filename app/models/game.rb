@@ -50,8 +50,8 @@ class Game < ApplicationRecord
     state['started']
   end
 
-  def start
-    state['deck'] = %w[
+  def start(deck = nil)
+    state['deck'] = deck || %w[
       14-C 6-C 7-C 8-C 9-C 10-C 11-C 12-C 13-C
       14-S 6-S 7-S 8-S 9-S 10-S 11-S 12-S 13-S
       14-D 6-D 7-D 8-D 9-D 10-D 11-D 12-D 13-D
@@ -66,10 +66,20 @@ class Game < ApplicationRecord
 
     state['attacks'] = Array.new(6)
     state['defences'] = Array.new(6)
-    state['started'] = true
+
+    state['trump'] = suit(state['deck'][-1])
+
+    lowest_trump = [state['hands'].values.flatten
+      .select { |c| trump?(c) }
+      .map { |c| rank(c) }.sort.first, state['trump']].join('-')
+    while !state['hands'][state['players'].first].include?(lowest_trump)
+      state['players'].rotate!
+    end
+
     state['attacker'] = state['players'].first
     state['defender'] = state['players'].second
-    state['trump'] = suit(state['deck'][-1])
+
+    state['started'] = true
     save!
 
     ActionCable.server.broadcast("notification_channel-#{id}", action: 'reload')
