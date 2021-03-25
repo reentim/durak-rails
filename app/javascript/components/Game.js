@@ -308,12 +308,11 @@ class Game extends React.Component {
                 key="hand-1"
                 cards={this.state.hands[this.state.player_id]} />
               <AttackContainer>
-                {new Array(allowedAttacks).fill().map((x, i) =>
+                {new Array(6).fill().map((x, i) =>
                   <AttackArea
                     index={i}
                     card={this.state.attacks[i]}
                     droppableId={`attackArea-${i}`}
-                    available={!isDefender}
                     key={i} />
                 )}
                 {
@@ -331,7 +330,7 @@ class Game extends React.Component {
                 { this.state.deck.length > 0 && <Deck cards={this.state.deck} />}
               </AttackContainer>
               <DefenceContainer>
-                {new Array(allowedAttacks).fill().map((x, i) =>
+                {new Array(6).fill().map((x, i) =>
                   <DefenceArea
                     index={i}
                     card={this.state.defences[i]}

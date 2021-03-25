@@ -32,9 +32,7 @@ export const AttackArea = (props) => {
     </Droppable>
   )
 
-  const slot = <Slot />
-
   return (
-    props.card ? card : props.available ? droppableSlot : slot
+    props.card ? card : droppableSlot
   )
 }

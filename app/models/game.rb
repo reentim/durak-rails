@@ -30,7 +30,12 @@ class Game < ApplicationRecord
         hand.concat(state['deck'].shift(6 - hand.count))
       end
     end
-    state['players'].rotate!(advance_by)
+    rotate_play(advance_by)
+    save!
+  end
+
+  def rotate_play(by = 1)
+    state['players'].rotate!(by)
     state['attacker'] = (state['players'] - state['finishedPlayers']).first
     state['defender'] = (state['players'] - state['finishedPlayers']).second
     save!
