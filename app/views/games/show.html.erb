@@ -1,6 +1,10 @@
 <div hidden id="game_id"><%= @game.id %></div>
 
-<%= react_component("Game", { state: @game.state_for(@player) }) %>
+<% if @game.started? && @player.nil? %>
+  <p class="center">Game closed</p>
+<% else %>
+  <%= react_component("Game", { state: @game.state_for(@player) }) %>
+<% end %>
 
 <% if @player.nil? && !@game.started? %>
   <%= form_with model: @player, url: players_path, local: true, class: 'center' do |f| %>
@@ -10,7 +14,7 @@
   <% end %>
 <% end %>
 
-<% if @player && @game.created_by?(@player) && !@game.started? %>
+<% if @player.present? && @game.created_by?(@player) && !@game.started? %>
   <%= form_with url: game_commencements_path, local: true, class: 'center' do |f| %>
     <%= f.hidden_field :game_id, value: @game.id %>
     <%= f.submit 'Start game' %>
