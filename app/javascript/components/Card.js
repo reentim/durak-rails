@@ -6,9 +6,11 @@ const Container = styled.div`
   width: 130px;
   height: 200px;
   background-size: cover;
-  margin-right: 10px;
+  margin-right: ${props => marginRight(props.handSize)}px;
   box-sizing: border-box;
 `
+
+const marginRight = (handSize) => Math.min((window.innerWidth - 16 - ((handSize + 1) * 130)) / (handSize + 1), 10)
 
 export const Card = (props) => {
   return(
@@ -18,6 +20,7 @@ export const Card = (props) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
+          handSize={props.handSize}
           style={{
             backgroundImage: `url(/cards/${props.value}.png)`,
             ...provided.draggableProps.style,

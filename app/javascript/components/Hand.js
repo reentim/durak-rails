@@ -21,7 +21,11 @@ export const Hand = (props) => {
             props.cards &&
               props.cards.map(
                 (card, index) => (
-                  <Card index={index} key={card} value={card} />
+                  <Card
+                    handSize={props.cards.length}
+                    index={index}
+                    key={card}
+                    value={card} />
                 )
               )
           }
