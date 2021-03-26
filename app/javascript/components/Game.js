@@ -181,7 +181,6 @@ class Game extends React.Component {
   }
 
   onDragEnd(result) {
-    console.log(result)
     const { destination, source, draggableId } = result
 
     if (!destination) {
